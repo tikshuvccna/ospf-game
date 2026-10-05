@@ -7,7 +7,7 @@
       const ch = OG.chById(chId), L = OG.lessons[chId];
       if (!L) { OG.toast('השיעור בבנייה', 'warn'); onClose && onClose({}); return; }
       const steps = L.steps; const cdata = OG.state.ch(chId); cdata.chk = cdata.chk || {};
-      let idx = 0, playing = true, speed = 1, scene = null, loopT = 0; const seen = new Set(), solved = new Set(Object.keys(cdata.chk).map(Number));
+      let idx = 0, playing = true, speed = 1, scene = null, loopT = 0, frozen = false; const seen = new Set(), solved = new Set(Object.keys(cdata.chk).map(Number));
       const free = OG.state.data.settings.free;
 
       const root = el('div.screen.solid'); const lesson = el('div.lesson'); root.append(lesson);
@@ -62,7 +62,7 @@
       function build() {
         const s = steps[idx];
         if (scene) { scene.destroy(); scene = null; }
-        view.innerHTML = '';
+        view.innerHTML = ''; frozen = false;
         if (s.widget) {
           const host = el('div.widget'); view.append(host);
           s.widget(host, { done() { solved.add(idx); setStatus(); }, ch: chId });
@@ -72,6 +72,11 @@
           scene = new OG.Scene(view, s.size || {});
           s.scene(scene);
           loopT = 0;
+        } else if (s.check) {
+          let j = idx - 1; while (j >= 0 && !steps[j].scene) j--;
+          ctl.style.display = 'none';
+          if (j >= 0) { scene = new OG.Scene(view, steps[j].size || {}); steps[j].scene(scene); scene.update(scene.end + 4); scene.update(.5); frozen = true; scene.svg.style.opacity = .55; }
+          else view.append(el('div', { style: { fontSize: '120px' }, text: '🧠' }));
         } else ctl.style.display = 'none';
         stage.classList.toggle('paused', !playing);
       }
@@ -106,7 +111,7 @@
       };
       document.addEventListener('keydown', keys);
       const loop = OG.loop(dt => {
-        if (!scene || !playing) return;
+        if (!scene || !playing || frozen) return;
         scene.update(dt * speed);
         if (steps[idx].loop !== false && scene.finished) { loopT += dt * speed; if (loopT > 2.2) { const keep = true; build(); } }
       });

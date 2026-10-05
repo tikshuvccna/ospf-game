@@ -24,7 +24,7 @@
       const data = cfg.next(spawned); spawned++;
       const e = el('div.srt-item', { html: `${data.icon ? `<div style="font-size:22px">${data.icon}</div>` : ''}<div class="t">${data.title}</div>${data.detail ? `<div class="d">${data.detail}</div>` : ''}` });
       lane.append(e);
-      const r = laneRect(); const sideW = sideEl ? Math.min(340, r.width * .4) + 20 : 0;
+      const r = laneRect(); const sideW = sideEl && r.width > 820 ? Math.min(340, r.width * .4) + 20 : 0;
       const w = e.offsetWidth || 160; const x0 = 10, x1 = Math.max(x0 + 1, r.width - sideW - w - 10);
       const it = { data, e, x: x0 + Math.random() * (x1 - x0), p: 0, dead: false };
       e.style.left = it.x + 'px'; items.push(it); updateActive();

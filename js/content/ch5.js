@@ -80,7 +80,7 @@
       {
         title: 'מי נתפס? שחקו עם הפקודה',
         html: `<p>הנתב בודק <b>כל ממשק</b>: האם כתובת ה-IP שלו מתאימה ל-Network + Wildcard? אם כן – הממשק משתתף ב-OSPF באזור שצוין.</p>
-          <ul><li>אפשר להפעיל פורט ספציפי: <code>network 192.168.23.2 0.0.0.0 area 0</code></li><li>ב-Multi-Area רושמים בכל פקודה לאיזה אזור הרשת שייכת – כך ABR מחבר שני אזורים.</li></ul>`,
+          <ul><li>אפשר להפעיל פורט ספציפי: <code>network 192.168.23.2 0.0.0.0 area 0</code></li><li>ב-Multi-Area רושמים בכל פקודה לאיזה אזור הרשת שייכת – כך ABR מחבר שני אזורים.</li><li><b>דרך שנייה (חדשה יותר):</b> להפעיל ישירות על הממשק: <code>interface gi0/1</code> ואז <code>ip ospf 1 area 0</code> – בלי פקודת network.</li></ul>`,
         widget: netMatcher
       },
       {
@@ -172,6 +172,7 @@
             { prompt: 'R2(config-router)#', ask: 'פרסמו את הרשת 192.168.23.0 עם Wildcard מתאים ל-/24 באזור 0', ok: [/^network 192\.168\.23\.0 0\.0\.0\.255 area 0$/], hint: 'network 192.168.23.0 0.0.0.255 area 0', show: 'network 192.168.23.0 0.0.0.255 area 0' },
             { prompt: 'R2(config-router)#', ask: 'ממשק gi0/1 פונה לעובדים – הפכו אותו לפסיבי', ok: [/^passive-interface (gi|gigabitethernet) ?0\/1$/], hint: 'passive-interface gi0/1', show: 'passive-interface gi0/1' },
             { prompt: 'R2(config-router)#', ask: 'פרסמו ברירת מחדל לשאר הנתבים', ok: [/^default-information originate( always)?$/], hint: 'default-information originate', show: 'default-information originate' },
+            { prompt: 'R2(config-if)#', ask: 'בדרך החלופית: על ממשק gi0/2 (אחרי interface gi0/2) הפעילו OSPF תהליך 1 באזור 0 ישירות', ok: [/^ip ospf 1 area 0$/], hint: 'ip ospf 1 area 0', show: 'ip ospf 1 area 0' },
             { prompt: 'R2(config)#', ask: 'צרו ממשק Loopback מספר 0', ok: [/^int(erface)? loopback ?0$/, /^int(erface)? lo ?0$/], hint: 'interface loopback 0', show: 'interface loopback 0' },
             { prompt: 'R2(config-if)#', ask: 'תנו לו כתובת 2.2.2.2 עם מסכה 255.255.255.255', ok: [/^ip address 2\.2\.2\.2 255\.255\.255\.255$/, /^ip add 2\.2\.2\.2 255\.255\.255\.255$/], hint: 'ip address 2.2.2.2 255.255.255.255', show: 'ip address 2.2.2.2 255.255.255.255' }
           ] }, ctx);

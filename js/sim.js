@@ -106,13 +106,15 @@
       const A = this.nodes[a], B = this.nodes[b];
       const id = o.id || `${a}~${b}`;
       const g = svg('g');
-      const line = svg('line', { x1: A.x, y1: A.y, x2: B.x, y2: B.y, stroke: o.color || '#4b68c8', 'stroke-width': o.w || 3.5, 'stroke-linecap': 'round', 'stroke-dasharray': o.dashed ? '8 6' : '' });
+      const bend = o.bend || 0;
+      const line = bend ? svg('path', { d: this.curve(A, B, bend), fill: 'none', stroke: o.color || '#4b68c8', 'stroke-width': o.w || 3.5, 'stroke-linecap': 'round', 'stroke-dasharray': o.dashed ? '8 6' : '' })
+        : svg('line', { x1: A.x, y1: A.y, x2: B.x, y2: B.y, stroke: o.color || '#4b68c8', 'stroke-width': o.w || 3.5, 'stroke-linecap': 'round', 'stroke-dasharray': o.dashed ? '8 6' : '' });
       g.append(line);
       const L = { id, a, b, g, line, o, up: true, extra: [] };
       // labels
       const mk = (txt, t, cls) => {
         const dx = B.x - A.x, dy = B.y - A.y, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len;
-        const off = o.lo ?? 0;
+        const off = (o.lo ?? 0) + bend * 2 * t * (1 - t);
         const x = A.x + dx * t + nx * off, y = A.y + dy * t + ny * off;
         const tg = svg('g', { transform: `translate(${x},${y})` });
         const tx = svg('text', { 'text-anchor': 'middle', y: 5, style: 'font-size:13px;font-weight:700;font-family:var(--mono);', fill: cls || '#fff' }, txt);
@@ -130,12 +132,14 @@
       if (o.eb) L.eb = mk(o.eb, o.ebt ?? .8, '#9fe9ff');
       this.links[id] = L; return L;
     }
+    curve(A, B, bend) { const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2, dx = B.x - A.x, dy = B.y - A.y, len = Math.hypot(dx, dy) || 1; return `M${A.x} ${A.y} Q${mx - dy / len * bend} ${my + dx / len * bend} ${B.x} ${B.y}`; }
     L(a, b) { return this.links[`${a}~${b}`] || this.links[`${b}~${a}`]; }
     relink(nid) {
       for (const k in this.links) {
         const L = this.links[k]; if (L.a !== nid && L.b !== nid) continue;
         const A = this.nodes[L.a], B = this.nodes[L.b];
-        L.line.setAttribute('x1', A.x); L.line.setAttribute('y1', A.y); L.line.setAttribute('x2', B.x); L.line.setAttribute('y2', B.y);
+        if (L.o.bend) L.line.setAttribute('d', this.curve(A, B, L.o.bend));
+        else { L.line.setAttribute('x1', A.x); L.line.setAttribute('y1', A.y); L.line.setAttribute('x2', B.x); L.line.setAttribute('y2', B.y); }
       }
     }
     linkColor(a, b, color, w) { const L = this.L(a, b); if (!L) return; L.line.setAttribute('stroke', color); if (w) L.line.setAttribute('stroke-width', w); }

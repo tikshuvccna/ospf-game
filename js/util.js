@@ -9,7 +9,7 @@ window.OG = window.OG || { games: {}, lessons: {}, quizzes: {} };
     const m = /^([a-z0-9]+)?((?:[.#][\w-]+)*)$/i.exec(spec) || [];
     const e = document.createElement(m[1] || 'div');
     (m[2] || '').replace(/([.#])([\w-]+)/g, (_, k, v) => { if (k === '.') e.classList.add(v); else e.id = v; });
-    if (attrs && (typeof attrs !== 'object' || attrs instanceof Node || Array.isArray(attrs))) { kids.unshift(attrs); attrs = null; }
+    if (attrs != null && (typeof attrs !== 'object' || attrs instanceof Node || Array.isArray(attrs))) { kids.unshift(attrs); attrs = null; }
     if (attrs) for (const k in attrs) {
       const v = attrs[k];
       if (k === 'html') e.innerHTML = v;

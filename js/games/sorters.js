@@ -112,7 +112,7 @@
     '5-stub': 'Stub חוסם Type 5 (וגם 4) – במקומם ה-ABR מזריק ברירת מחדל.', '5-tstub': 'Totally Stub חוסם Type 5.', '5-nssa': 'NSSA חוסם Type 5 – חיצוניים נכנסים כ-Type 7.', '5-tnssa': 'Totally NSSA חוסם Type 5.',
     '3-tstub': 'Totally Stub חוסם גם Type 3 (פרט לברירת המחדל).', '3-tnssa': 'Totally NSSA חוסם Type 3 (פרט לברירת המחדל).', '3-stub': 'ב-Stub רגיל Type 3 עדיין עובר – רק Type 5 נחסם.', '3-nssa': 'ב-NSSA רגיל Type 3 עובר.',
     '7-nssa': 'NSSA מתיר ASBR באזור ולכן Type 7 מותר.', '7-tnssa': 'Totally NSSA מתיר Type 7.', '7-stub': 'ב-Stub אין ASBR – Type 7 לא קיים/חסום.', '7-tstub': 'ב-Totally Stub אין ASBR – חסום.', '7-normal': 'באזור רגיל Type 7 לא בשימוש.',
-    '4-stub': 'Type 4 חסום באזור Stub (אין צורך לדעת איפה ה-ASBR).', 'dflt': 'ברירת המחדל (0.0.0.0) ש-ABR מזריק כ-Type 3 חייבת לעבור – זה כל הרעיון!', 'ok': 'מידע פנים-אזורי או רגיל – עובר.'
+    '4-stub': 'Type 4 חסום באזור Stub (אין צורך לדעת איפה ה-ASBR).', '4-tstub': 'Type 4 חסום – אין ASBR להגיע אליו באזור כזה.', '4-nssa': 'Type 4 חסום באזורי Stub/NSSA – ה-Type 7 מחליף את הצורך.', '4-tnssa': 'Type 4 חסום גם ב-Totally NSSA.', 'dflt': 'ברירת המחדל (0.0.0.0) ש-ABR מזריק כ-Type 3 חייבת לעבור – זה כל הרעיון!', 'ok': 'מידע פנים-אזורי או רגיל – עובר.'
   };
   OG.games.e4 = {
     title: 'ביקורת המכס', story: 'אזורים קטנים לא רוצים לקבל את כל מה שקיים בעולם. אתם קציני המכס: LSA מגיע לגבול אזור – להכניס, לחסום, או (ב-ABR) להמיר Type 7 ל-Type 5?',

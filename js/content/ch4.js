@@ -21,7 +21,7 @@
 
   function costTopo(S, o = {}) {
     S.node('R1', 150, 190, { label: 'R1' }); S.node('R2', 650, 190, { label: 'R2' });
-    S.link('R1', 'R2', { id: 'fe', label: 'FastEthernet 100M', lo: -55 }); S.link('R1', 'R2', { id: 'ge', label: 'Gigabit 1000M', lo: 55, lt: .5 });
+    S.link('R1', 'R2', { id: 'fe', label: 'FastEthernet 100M', bend: -120 }); S.link('R1', 'R2', { id: 'ge', label: 'Gigabit 1000M', bend: 120 });
   }
 
   OG.lessons.ch4 = {
@@ -51,11 +51,11 @@
           <div class="callout warn">⚠️ מומלץ להגדיר <b>אותו ערך בכל הנתבים</b> – אחרת כל נתב מחשב אחרת.</div>`,
         scene(S) {
           costTopo(S);
-          S.note('cmd', 30, 330, '<div class="cli" style="margin:0;font-size:12px">R1(config-router)# auto-cost reference-bandwidth 1000</div>', { w: 360, cls: 'c', hidden: true });
-          S.note('c1', 330, 110, '<b>cost 1</b>', { w: 140, cls: 'y', align: 'center' }); S.note('c2', 330, 270, '<b>cost 1</b>', { w: 140, cls: 'y', align: 'center' });
-          S.note('warn', 400, 330, '⚠️ שני הקווים באותה עלות – OSPF לא יעדיף את ה-Gigabit', { w: 350, cls: 'r' });
+          S.note('cmd', 20, 372, '<div class="cli" style="margin:0;font-size:11.5px">R1(config-router)# auto-cost reference-bandwidth 1000</div>', { w: 330, cls: 'c', hidden: true });
+          S.note('c1', 330, 78, '<b>cost 1</b>', { w: 140, cls: 'y', align: 'center' }); S.note('c2', 330, 262, '<b>cost 1</b>', { w: 140, cls: 'y', align: 'center' });
+          S.note('warn', 340, 372, '⚠️ שני הקווים באותה עלות – OSPF לא יעדיף את ה-Gigabit', { w: 350, cls: 'r' });
           S.at(2.5, S => { S.show('warn', false); S.show('cmd', true); });
-          S.at(4, S => { S.setNote('c1', '<b>cost 10</b>'); S.setNote('c2', '<b>cost 1</b>'); S.items.c1.d.className = 'fo fo-note g'; S.items.c2.d.className = 'fo fo-note g'; S.trace(['R1', 'R2'], { color: '#34d399' }); S.note('ok', 400, 330, '✅ עכשיו OSPF מעדיף את ה-Gigabit (1 < 10)', { w: 350, cls: 'g' }); S.packet('R1', 'R2', { label: 'OSPF', color: '#34d399', dur: 2, lift: 55 }); });
+          S.at(4, S => { S.setNote('c1', '<b>cost 10</b>'); S.setNote('c2', '<b>cost 1</b>'); S.items.c1.d.className = 'fo fo-note g'; S.items.c2.d.className = 'fo fo-note g'; S.links.ge.line.setAttribute('stroke', '#34d399'); S.links.ge.line.setAttribute('stroke-width', 7); S.note('ok', 340, 372, '✅ עכשיו OSPF מעדיף את ה-Gigabit (1 < 10)', { w: 350, cls: 'g' }); S.packet('R1', 'R2', { label: 'OSPF', color: '#34d399', dur: 2, lift: 60 }); });
         }
       },
       {
@@ -80,10 +80,10 @@
           <div class="callout tip">💡 סיכום – שלוש דרכים להשפיע על Cost: <b>reference-bandwidth</b>, <b>bandwidth</b> של ממשק, ו-<b>ip ospf cost</b>.</div>`,
         scene(S) {
           costTopo(S);
-          S.note('c1', 330, 110, '<b>cost 10</b>', { w: 140, cls: 'y', align: 'center' }); S.note('c2', 330, 270, '<b>cost 1</b>', { w: 140, cls: 'g', align: 'center' });
-          S.note('cmd', 30, 340, '<div class="cli" style="margin:0;font-size:12px">R1(config)# interface gi0/0/0\nR1(config-if)# ip ospf cost 20</div>', { w: 330, hidden: true });
+          S.note('c1', 330, 78, '<b>cost 10</b>', { w: 140, cls: 'y', align: 'center' }); S.note('c2', 330, 262, '<b>cost 1</b>', { w: 140, cls: 'g', align: 'center' });
+          S.note('cmd', 20, 372, '<div class="cli" style="margin:0;font-size:11.5px">R1(config)# interface gi0/0/0\nR1(config-if)# ip ospf cost 20</div>', { w: 310, hidden: true });
           S.at(1.5, S => S.show('cmd', true));
-          S.at(3, S => { S.setNote('c2', '<b>cost 20</b>'); S.items.c2.d.className = 'fo fo-note r'; S.note('res', 400, 340, '🔀 עכשיו ה-FastEthernet (10) זול יותר מה-Gigabit (20)', { w: 340, cls: 'c' }); S.trace(['R1', 'R2'], { color: '#fbbf24', lo: -55 }); });
+          S.at(3, S => { S.setNote('c2', '<b>cost 20</b>'); S.items.c2.d.className = 'fo fo-note r'; S.note('res', 340, 372, '🔀 עכשיו ה-FastEthernet (10) זול יותר מה-Gigabit (20)', { w: 340, cls: 'c' }); S.links.fe.line.setAttribute('stroke', '#fbbf24'); S.links.fe.line.setAttribute('stroke-width', 7); });
         }
       },
       {
@@ -134,7 +134,7 @@
         title: 'סיכום הפרק',
         html: `<div class="callout story">📈 הסוחר: "עכשיו אתם יודעים לתמחר כל כביש. בואו למרוץ: מי ימצא את המסלול הזול ביותר?"</div>
           <ul><li>Cost = Reference BW ÷ Interface BW (ברירת מחדל Ref=100). מינימום 1.</li><li>שינוי: <code>auto-cost reference-bandwidth</code> (Mb/s), <code>bandwidth</code> (Kb/s, לא משנה מהירות אמיתית), <code>ip ospf cost</code>.</li><li>עלות נתיב = סכום עלויות פורטי היציאה.</li><li>עלות שווה → איזון עומסים (עד 4 כברירת מחדל, <code>maximum-paths</code> 1–32).</li></ul>`,
-        scene(S) { costTopo(S); S.trace(['R1', 'R2'], { color: '#34d399' }); }
+        scene(S) { costTopo(S); S.links.ge.line.setAttribute('stroke', '#34d399'); S.links.ge.line.setAttribute('stroke-width', 7); }
       }
     ]
   };

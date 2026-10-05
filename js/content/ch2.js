@@ -4,7 +4,7 @@
 
   function areasTopo(S, o = {}) {
     S.area('a0', { cx: 400, cy: 130, rx: 205, ry: 92, color: '#fbbf24', label: 'Area 0 · Backbone', lx: 400, ly: 52 });
-    S.area('a1', { cx: 115, cy: 320, rx: 118, ry: 100, color: '#fb923c', label: 'Area 1', lx: 115, ly: 410 });
+    S.area('a1', { cx: 128, cy: 320, rx: 112, ry: 100, color: '#fb923c', label: 'Area 1', lx: 128, ly: 410 });
     S.area('a2', { cx: 400, cy: 372, rx: 118, ry: 78, color: '#f472b6', label: 'Area 2', lx: 400, ly: 436 });
     S.area('a3', { cx: 685, cy: 320, rx: 118, ry: 100, color: '#22d3ee', label: 'Area 3', lx: 685, ly: 410 });
     S.node('B1', 325, 105, { label: 'R', size: .8 }); S.node('B2', 475, 105, { label: 'R', size: .8 }); S.node('B3', 400, 170, { label: 'R', size: .8 });

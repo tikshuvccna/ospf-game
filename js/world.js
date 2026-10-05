@@ -479,17 +479,20 @@
     },
 
     /* ---------------- minimap ---------------- */
-    buildMinimap() {
-      const g = this.gen, W = g.W, H = g.H, s = 220 / W * 1.0; this.mmScale = Math.min(220 / (g.bounds.x1 - g.bounds.x0), 170 / (g.bounds.y1 - g.bounds.y0));
-      const cv = document.createElement('canvas'); cv.width = 440; cv.height = 340; const c = cv.getContext('2d'); const k = this.mmScale * 2; this.mmK = k;
-      c.fillStyle = '#07101f'; c.fillRect(0, 0, 440, 340); c.translate(-g.bounds.x0 * k, -g.bounds.y0 * k); c.scale(k, k);
-      c.fillStyle = '#1d2c4d'; c.fillRect(g.bounds.x0, g.bounds.y0, g.bounds.x1 - g.bounds.x0, g.bounds.y1 - g.bounds.y0);
+    renderMapBase(k) {
+      const g = this.gen, bw = g.bounds.x1 - g.bounds.x0, bh = g.bounds.y1 - g.bounds.y0;
+      const cv = document.createElement('canvas'); cv.width = Math.ceil(bw * k); cv.height = Math.ceil(bh * k); const c = cv.getContext('2d');
+      c.fillStyle = '#07101f'; c.fillRect(0, 0, cv.width, cv.height); c.scale(k, k); c.translate(-g.bounds.x0, -g.bounds.y0);
+      c.fillStyle = '#1d2c4d'; c.fillRect(g.bounds.x0, g.bounds.y0, bw, bh);
       c.fillStyle = '#2a3658'; for (let j = 0; j < 5; j++) c.fillRect(G.gx(0) - G.RW / 2, G.gy(j) - G.RW / 2, G.gx(5) - G.gx(0) + G.RW, G.RW);
       for (const i of [0, 1, 2, 4, 5]) c.fillRect(G.gx(i) - G.RW / 2, G.gy(0) - G.RW / 2, G.RW, G.gy(4) - G.gy(0) + G.RW);
       for (const b of g.blocks) { const ch = b.spec.ch && OG.chById(b.spec.ch); c.fillStyle = ch ? ch.color + '66' : b.spec.theme === 'park' ? '#1f5a3f' : b.spec.theme === 'stadium' ? '#7a3f24' : '#3a4561'; c.fillRect(b.x + 6, b.y + 6, b.w - 12, b.h - 12); }
       c.fillStyle = '#0e5f93'; c.fillRect(g.water.x, g.water.y, g.water.w, g.water.h);
       c.fillStyle = '#7a8cb8'; c.fillRect(g.bridge.x, g.bridge.y + 20, g.bridge.w, G.RW - 40);
-      this.mm = cv;
+      return cv;
+    },
+    buildMinimap() {
+      const g = this.gen; this.mmScale = Math.min(220 / (g.bounds.x1 - g.bounds.x0), 170 / (g.bounds.y1 - g.bounds.y0)); this.mmK = this.mmScale * 2; this.mm = this.renderMapBase(this.mmK);
     },
     drawMinimap() {
       const cv = document.getElementById('minimap'); if (!cv) return; const c = cv.getContext('2d'); const g = this.gen, k = this.mmK;
@@ -505,13 +508,13 @@
       if (OG.state.data.items.radar) { c.fillStyle = '#fbbf24'; for (const co of this.coins) if (!OG.state.data.collected[co.id]) { const [x, y] = toM(co.x, co.y); if (x > 0 && y > 0 && x < cv.width && y < cv.height) c.fillRect(x - 1, y - 1, 2.5, 2.5); } c.fillStyle = '#f472b6'; for (const n of this.npcs) { const [x, y] = toM(n.x, n.y); c.fillRect(x - 2, y - 2, 4, 4); } }
       const [px, py] = toM(f.x, f.y); c.save(); c.translate(px, py); c.rotate(f.car ? 0 : (this.P.car ? this.P.car.a : this.P.face)); c.fillStyle = '#22d3ee'; c.strokeStyle = '#fff'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(8, 0); c.lineTo(-6, -5); c.lineTo(-3, 0); c.lineTo(-6, 5); c.closePath(); c.fill(); c.stroke(); c.restore();
     },
-    bigMap(canvas, scale) {
-      const g = this.gen; const w = canvas.width, h = canvas.height; const c = canvas.getContext('2d'); const k = Math.min(w / (g.bounds.x1 - g.bounds.x0), h / (g.bounds.y1 - g.bounds.y0));
-      c.fillStyle = '#07101f'; c.fillRect(0, 0, w, h); c.drawImage(this.mm, 0, 0, this.mm.width, this.mm.height, 0, 0, (g.bounds.x1 - g.bounds.x0) * k, (g.bounds.y1 - g.bounds.y0) * k);
+    bigMap(canvas) {
+      const g = this.gen; const w = canvas.width, h = canvas.height; const c = canvas.getContext('2d'); const bw = g.bounds.x1 - g.bounds.x0, bh = g.bounds.y1 - g.bounds.y0; const k = Math.min(w / bw, h / bh);
+      c.fillStyle = '#07101f'; c.fillRect(0, 0, w, h); c.drawImage(this.renderMapBase(k), 0, 0);
       const pos = (x, y) => [(x - g.bounds.x0) * k, (y - g.bounds.y0) * k];
       const spots = [];
-      for (const d of this.doors) { const [x, y] = pos(d.x, d.y); const ch = d.ch && OG.chById(d.ch); const un = !ch || OG.isUnlocked(ch.id); c.fillStyle = un ? (ch ? ch.color : '#c4b5fd') : '#64748b'; c.beginPath(); c.arc(x, y, 15, 0, TWO); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 2; c.stroke(); c.fillStyle = '#001018'; c.font = '900 15px Heebo'; c.textAlign = 'center'; c.fillText(ch ? (ch.boss ? '★' : ch.num) : '🛒', x, y + 5); c.fillStyle = '#fff'; c.font = '700 12px Heebo'; c.fillText(ch ? ch.title : 'חנות', x, y + 30); spots.push({ x, y, r: 18, d: d, un }); }
-      const f = this.P.car || this.P; const [px, py] = pos(f.x, f.y); c.fillStyle = '#22d3ee'; c.beginPath(); c.arc(px, py, 8, 0, TWO); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 3; c.stroke(); c.fillStyle = '#fff'; c.font = '800 12px Heebo'; c.fillText('אתם', px, py - 14);
+      for (const d of this.doors) { const [x, y] = pos(d.x, d.y); const ch = d.ch && OG.chById(d.ch); const un = !ch || OG.isUnlocked(ch.id); c.fillStyle = un ? (ch ? ch.color : '#c4b5fd') : '#64748b'; c.beginPath(); c.arc(x, y, 15, 0, TWO); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 2; c.stroke(); c.fillStyle = '#001018'; c.font = '900 15px Heebo, Arial'; c.textAlign = 'center'; c.fillText(ch ? (ch.boss ? '★' : ch.num) : '🛒', x, y + 5); c.fillStyle = '#fff'; c.font = '700 12px Heebo, Arial'; c.fillText(ch ? ch.title : 'חנות', x, y + 30); spots.push({ x, y, r: 18, d: d, un }); }
+      const f = this.P.car || this.P; const [px, py] = pos(f.x, f.y); c.fillStyle = '#22d3ee'; c.beginPath(); c.arc(px, py, 8, 0, TWO); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 3; c.stroke(); c.fillStyle = '#fff'; c.font = '800 12px Heebo, Arial'; c.fillText('אתם', px, py - 14);
       return spots;
     }
   };

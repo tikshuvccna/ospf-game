@@ -45,7 +45,7 @@
       const run = () => {
         root.innerHTML = ''; OG.snd.duck(true);
         const lv = OG.GAME_LEVELS[level], cfg = G.cfg[level];
-        const game = el('div.game'); root.append(game);
+        const game = el('div.game', { style: { background: `radial-gradient(1000px 600px at 50% -10%, ${ch.color}33 0%, #0a0f22 65%)` } }); root.append(game);
         const heartsEl = el('span.hearts'), scoreEl = el('span.g-stat', { text: '0' }), timerBar = el('div.g-timer', el('i')), timeEl = el('span.g-stat', { text: '' });
         const top = el('div.g-top', el('span.g-title', { html: `${ch.icon} ${G.title}` }), el('span.g-lvl.l' + level, { text: lv.name }), heartsEl, el('span', { text: '⭐' }), scoreEl, cfg.time ? [timerBar, timeEl] : el('div.grow'),
           el('button.btn.small', { text: '⏸', onclick: () => pause(true) }), el('button.btn.small.danger', { text: '✕', onclick: () => { if (confirm('לצאת מהמשחקון? ההתקדמות תאבד.')) { destroy(); exit({}); } } }));
@@ -109,7 +109,7 @@
           OG.snd.duck(false); OG.snd.play(pass ? 'win' : 'lose');
           const grade = pass ? (frac >= .95 && wrongN === 0 ? 'מושלם! 🏆' : 'כל הכבוד! 🎉') : 'לא נורא, עוד ניסיון? 💪';
           const p = el('div.panel.result');
-          p.append(el('div.grade', { text: grade }), el('div.big', { text: pts }), el('div.muted', { text: `מתוך ${lv.max} נקודות` }),
+          p.append(el('div.grade', { text: grade }), el('div.big', { text: pts }), el('div.muted', { text: `מתוך ${lv.max} נקודות (כולל בונוס מהירות וקומבו עד +15%)` }),
             el('table', el('tr', el('td', 'משימות שהושלמו'), el('td.ltr', `${correctN}/${total}`)), el('tr', el('td', 'טעויות'), el('td.ltr', wrongN)), el('tr', el('td', 'קומבו מקסימלי'), el('td.ltr', '×' + bestCombo)), el('tr', el('td', 'שיא אישי ברמה'), el('td.ltr', best.pts)), el('tr', el('td', 'מטבעות שהרווחתם'), el('td.ltr', '🪙 ' + Math.round(gain / 4)))),
             el('div.callout.' + (pass ? 'tip' : 'warn'), { html: pass ? '✅ הרמה נחשבת עברה (70% ומעלה).' : '⚠️ כדי לעבור צריך להשלים לפחות 70% מהמשימות.' }),
             G.outro ? el('div.callout.story', { html: G.outro }) : '',
