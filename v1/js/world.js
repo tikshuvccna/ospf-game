@@ -2,6 +2,8 @@
 (function (OG) {
   const G = OG.Gen, { rr, shade } = G;
   const TWO = Math.PI * 2;
+  // layout-independent key name: WASD/E/M/... keep working under a Hebrew (or any non-Latin) keyboard layout
+  const kn = e => (/^Key[A-Z]$/.test(e.code || '') ? e.code[3].toLowerCase() : String(e.key).toLowerCase());
   const EMOJI = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
 
   const Wd = OG.World = {
@@ -46,7 +48,7 @@
     bindInput() {
       const down = e => {
         if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
-        const k = e.key.toLowerCase(); this.keys[k] = true; this.clickTarget = null;
+        const k = kn(e); this.keys[k] = true; this.clickTarget = null;
         if (this.paused) return;
         if (k === 'e' || k === 'enter') this.interact();
         else if (k === 'm') OG.ui.openMap();
@@ -54,7 +56,7 @@
         else if (k === 'escape') OG.ui.openMenu();
         if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k)) e.preventDefault();
       };
-      addEventListener('keydown', down); addEventListener('keyup', e => { this.keys[e.key.toLowerCase()] = false; });
+      addEventListener('keydown', down); addEventListener('keyup', e => { this.keys[kn(e)] = false; });
       addEventListener('blur', () => { this.keys = {}; });
       this.cv.addEventListener('pointerdown', e => {
         if (this.paused || this.attract) return; OG.snd.init();

@@ -180,7 +180,7 @@
         box.append(el('div.face', { text: npc.face }), holder);
         OG.mcq(holder, item, { revealAfter: 1, onDone(r) { d.npcSeen[npc.id + '_q'] = 1; if (r.correct && r.attempts === 1) { OG.state.addCoins(8); OG.toast('+8 🪙 תשובה מושלמת!', 'good'); } OG.state.save(); holder.append(el('button.btn.small.primary', { text: 'סגור', onclick: close, style: { marginTop: '8px' } })); } });
       };
-      const keyH = e => { if (/INPUT/.test(e.target.tagName)) return; if (e.key === 'e' || e.key === 'Enter' || e.key === ' ') { if (box.querySelector('.mcq')) return; e.preventDefault(); e.stopPropagation(); adv(); } else if (e.key === 'Escape') close(); };
+      const keyH = e => { if (/INPUT/.test(e.target.tagName)) return; if (e.key === 'e' || e.code === 'KeyE' || e.key === 'Enter' || e.key === ' ') { if (box.querySelector('.mcq')) return; e.preventDefault(); e.stopPropagation(); adv(); } else if (e.key === 'Escape') close(); };
       setTimeout(() => document.addEventListener('keydown', keyH), 50);
       showLine();
     },

@@ -2,6 +2,8 @@
 (function (OG) {
   const G = OG.Gen, { rr, shade } = G;
   const TWO = Math.PI * 2;
+  // layout-independent key name: WASD/E/M/... keep working under a Hebrew (or any non-Latin) keyboard layout
+  const kn = e => (/^Key[A-Z]$/.test(e.code || '') ? e.code[3].toLowerCase() : String(e.key).toLowerCase());
   const EMOJI = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
   const PU = { turbo: ['⚡', '#22d3ee'], health: ['❤️', '#f43f5e'], armor: ['🛡️', '#60a5fa'], ammo: ['🔫', '#fbbf24'], magnet: ['🧲', '#a78bfa'], star: ['⭐', '#fde047'], ghost: ['👻', '#e5e7eb'], double: ['💥', '#fb923c'] };
   OG.PU = PU;
@@ -58,7 +60,7 @@
     bindInput() {
       const down = e => {
         if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
-        const k = e.key.toLowerCase(); this.keys[k] = true;
+        const k = kn(e); this.keys[k] = true;
         if (this.paused) return;
         if (k === 'e') this.interact();
         else if (k === 'm') OG.ui.openMap();
@@ -69,7 +71,7 @@
         if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' ', 'tab'].includes(k)) e.preventDefault();
       };
       addEventListener('keydown', down);
-      addEventListener('keyup', e => { const k = e.key.toLowerCase(); this.keys[k] = false; if (k === 'f') this.firing = false; if (k === 'tab') OG.MP && OG.MP.board(false); });
+      addEventListener('keyup', e => { const k = kn(e); this.keys[k] = false; if (k === 'f') this.firing = false; if (k === 'tab') OG.MP && OG.MP.board(false); });
       addEventListener('blur', () => { this.keys = {}; this.firing = false; });
       const cv = this.cv;
       cv.addEventListener('contextmenu', e => e.preventDefault());
