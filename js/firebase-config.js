@@ -1,5 +1,12 @@
-/* Multiplayer (Firebase Realtime Database, free Spark plan).
-   Paste your project's web config here to let every player connect online automatically:
-   window.OG_FIREBASE = { apiKey: "...", authDomain: "...", databaseURL: "https://<project>-default-rtdb.<region>.firebasedatabase.app", projectId: "...", appId: "..." };
-   Leave null to use the in-game "paste config" box or local (same-browser) mode. */
-window.OG_FIREBASE = null;
+/* Multiplayer (Firebase Realtime Database, free Spark plan). */
+window.OG_FIREBASE = {
+  apiKey: "AIzaSyAd_JOfuIyAWBixt2mi6ggOt0FGYJqM9MQ",
+  authDomain: "ospf-gta.firebaseapp.com",
+  // Must match the URL shown at the top of Build → Realtime Database in the Firebase console.
+  // us-central1 default; another region looks like https://ospf-gta-default-rtdb.europe-west1.firebasedatabase.app
+  databaseURL: "https://ospf-gta-default-rtdb.firebaseio.com",
+  projectId: "ospf-gta",
+  storageBucket: "ospf-gta.firebasestorage.app",
+  messagingSenderId: "509020618130",
+  appId: "1:509020618130:web:84314e4aab385c3d96154b"
+};
