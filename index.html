@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>OSPF City · עיר הנתבים</title>
+<meta name="description" content="משחק למידה בסגנון GTA2 ממבט על: לומדים OSPF תוך כדי הליכה, נהיגה, הנפשות, שאלות ומשחקונים.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%231e5a8a' stroke='%2322d3ee' stroke-width='4'/%3E%3Cpath d='M20 26h20l-5-6m5 6-5 6M44 38H24l5-6m-5 6 5 6' stroke='white' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="world"></canvas>
+
+<div id="hud" class="hidden">
+  <div class="hud-top">
+    <div class="chip" id="hud-score" title="ניקוד כולל">⭐ <b>0</b></div>
+    <div class="chip" id="hud-coins" title="מטבעות (Packets)">🪙 <b>0</b></div>
+    <div class="chip" id="hud-rank" title="דרגה">🎖️ <b>מתלמד</b></div>
+    <div class="hud-spacer"></div>
+    <button class="icon-btn" id="btn-map" title="מפה (M)">🗺️</button>
+    <button class="icon-btn" id="btn-sound" title="צליל">🔊</button>
+    <button class="icon-btn" id="btn-menu" title="תפריט (Esc)">☰</button>
+  </div>
+  <div id="objective" class="objective"></div>
+  <div id="toast-wrap"></div>
+  <div class="minimap-wrap"><canvas id="minimap" width="220" height="170"></canvas><div class="mm-label">מפה</div></div>
+  <div id="prompt" class="prompt hidden"></div>
+  <div id="arrow" class="quest-arrow hidden">➤</div>
+  <div id="touch" class="touch hidden">
+    <div id="joy"><div id="joy-knob"></div></div>
+    <div class="touch-btns">
+      <button id="t-act" class="tbtn big">E</button>
+      <button id="t-run" class="tbtn">⚡</button>
+    </div>
+  </div>
+</div>
+
+<div id="screens"></div>
+<div id="dialog" class="dialog hidden"></div>
+<div id="fx"></div>
+
+<script src="js/util.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/state.js"></script>
+<script src="js/chapters.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/widgets.js"></script>
+<script src="js/lesson.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/gameshell.js"></script>
+<script src="js/sorter.js"></script>
+<script src="js/content/ch1.js"></script>
+<script src="js/content/ch2.js"></script>
+<script src="js/content/ch3.js"></script>
+<script src="js/content/ch4.js"></script>
+<script src="js/content/ch5.js"></script>
+<script src="js/content/ch6.js"></script>
+<script src="js/content/ch7.js"></script>
+<script src="js/content/ch8.js"></script>
+<script src="js/content/e1.js"></script>
+<script src="js/content/e2.js"></script>
+<script src="js/content/e3.js"></script>
+<script src="js/content/e4.js"></script>
+<script src="js/content/e5.js"></script>
+<script src="js/games/hello.js"></script>
+<script src="js/games/cost.js"></script>
+<script src="js/games/wildcard.js"></script>
+<script src="js/games/election.js"></script>
+<script src="js/games/terminal.js"></script>
+<script src="js/games/doctor.js"></script>
+<script src="js/games/handshake.js"></script>
+<script src="js/games/spf.js"></script>
+<script src="js/games/highway.js"></script>
+<script src="js/games/sorters.js"></script>
+<script src="js/worldgen.js"></script>
+<script src="js/world.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
