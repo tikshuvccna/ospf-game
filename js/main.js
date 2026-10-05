@@ -1,6 +1,6 @@
 /* OSPF City – boot */
 (function (OG) {
-  window.addEventListener('DOMContentLoaded', () => {
+  const boot = () => {
     OG.state.load();
     const s = OG.state.data.settings; OG.snd.enabled = s.sound; OG.snd.music = s.music;
     OG.World.init(document.getElementById('world'));
@@ -14,5 +14,6 @@
     setInterval(() => { if (!OG.World.paused) OG.ui.updateObjective(); }, 1000);
     document.addEventListener('pointerdown', () => OG.snd.init(), { once: true });
     window.OG = OG;
-  });
+  };
+  if (document.readyState === 'loading') window.addEventListener('DOMContentLoaded', boot); else boot();
 })(window.OG);
