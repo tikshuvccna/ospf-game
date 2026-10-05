@@ -19,8 +19,12 @@
   <div class="hud-top">
     <div class="chip" id="hud-score" title="ניקוד כולל">⭐ <b>0</b></div>
     <div class="chip" id="hud-coins" title="מטבעות (Packets)">🪙 <b>0</b></div>
+    <div class="chip" id="hud-cash" title="מזומן">💵 <b>0</b></div>
+    <div class="chip" id="hud-power" title="כוח (פרקים + משימות)">💪 <b>0</b></div>
     <div class="chip" id="hud-rank" title="דרגה">🎖️ <b>מתלמד</b></div>
     <div class="hud-spacer"></div>
+    <button class="icon-btn" id="btn-mp" title="רב־משתתפים (G)">🌐</button>
+    <button class="icon-btn" id="btn-prof" title="פרופיל (P)">👤</button>
     <button class="icon-btn" id="btn-map" title="מפה (M)">🗺️</button>
     <button class="icon-btn" id="btn-sound" title="צליל">🔊</button>
     <button class="icon-btn" id="btn-menu" title="תפריט (Esc)">☰</button>
@@ -32,9 +36,13 @@
   <div id="arrow" class="quest-arrow hidden">➤</div>
   <div id="touch" class="touch hidden">
     <div id="joy"><div id="joy-knob"></div></div>
+    <div id="joy2"><div id="joy2-knob"></div><span>🔫</span></div>
     <div class="touch-btns">
       <button id="t-act" class="tbtn big">E</button>
       <button id="t-run" class="tbtn">⚡</button>
+      <button id="t-w" class="tbtn">🔄</button>
+      <button id="t-dash" class="tbtn">💨</button>
+      <button id="t-pulse" class="tbtn">🌊</button>
     </div>
   </div>
 </div>
@@ -76,8 +84,15 @@
 <script src="js/games/spf.js"></script>
 <script src="js/games/highway.js"></script>
 <script src="js/games/sorters.js"></script>
+<script src="js/vehicles.js"></script>
 <script src="js/worldgen.js"></script>
 <script src="js/world.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/combat.js"></script>
+<script src="js/missions.js"></script>
+<script src="js/casino.js"></script>
+<script src="js/mp.js"></script>
+<script src="js/services.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/main.js"></script>
 </body>

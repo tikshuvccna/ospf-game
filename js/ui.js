@@ -22,6 +22,15 @@
     e3npc: { lines: ['דייקסטרה: בכל צעד בוחרים את הצומת הקרוב ביותר שעוד לא ביקרנו בו. פשוט כמו שזה נשמע.'], q: 'e3' },
     e4npc: { lines: ['קצין המכס: Stub חוסם Type 5. Totally Stub חוסם גם Type 3. NSSA מתיר ASBR דרך Type 7. עברו לי בשקט.'], q: 'e4' },
     e5npc: { lines: ['הקברניט: OSPF רץ ישירות על IP פרוטוקול 89 – לא TCP ולא UDP. תזכרו את זה במבחן!'], q: 'e5' },
+    croupier: { lines: ['ברוכים הבאים ל-Lucky Packets! כאן ממירים מטבעות 🪙 בהימורים: סלוטס, גבוה/נמוך, והימור על הידע שלכם ב-OSPF.', 'טיפ מהבית: הבית תמיד מנצח… חוץ מבשאלות OSPF, שם אתם יכולים לנצח אותי.'], again: ['הקלפים מחכים לכם. 🎴'], open: 'casino' },
+    arms: { lines: ['סיכה, סוחר הנשק. כל נשק אצלי נקרא על שם פרוטוקול: ה-Burst, ה-Flood, ה-LSA… ואל תירו ליד הבניינים, יש שם שוטרים.'], again: ['תחמושת? תמיד יש. 💵'], open: 'arms' },
+    cardealer: { lines: ['מהיר, מהיר יותר, ופורמולה OSPF. מה מעניין אתכם? אופנועים ל-Hello מהיר או משוריין לכנופיות?'], open: 'dealer' },
+    mechanic: { lines: ['מכונאי הצבע. תן לי רכב ואני אשנה לו פנים – ואם המשטרה מחפשת אתכם, אפילו זהות. 😉'], open: 'garage' },
+    jobsboss: { lines: ['מנהלת המשימות! שליחויות, מרוצים, ניקוי כנופיות. כל 3 משימות = +1 כוח (נזק ובריאות). כשתיכנסו לחדר רב־משתתפים – זה ההבדל בין חזק לחלש.'], again: ['יש לי משימה בשבילכם. 💼'], open: 'jobs' },
+    sheriff: { lines: ['אני השריף. בעיר הזו אין אירוע שלא מגיעים אליו… תוך דקה. שמרו על חוק – או שלמו קנס.'], open: 'police' },
+    doctor: { lines: ['ד״ר אור. אצלי מתעוררים כשנופלים, ומתרפאים בדקות. כסף בבנק לא הולך לאיבוד כשנופלים – תזכרו!'], open: 'hospital' },
+    dockmaster: { lines: ['רב החובל! הים פתוח. סירה חינם תמיד מחכה בחוף – ואם רוצים מהירות, יש סירת מירוץ.'], again: ['הים קורא. 🌊'], open: 'dock' },
+    banker: { lines: ['הבנקאית. מפקידים, מושכים, ומקבלים ריבית. כסף בחשבון בטוח מנפילות ומעצרים.'], open: 'bank' },
     park: { lines: ['ריצה בפארק! 🏃 טיפ: אפשר לאסוף 🪙 גם מהרכב. וה-⚡ מגביר מהירות ל-10 שניות.', 'שמעתי שיש מטבע זהב בכל בלוק…'] }
   };
 
@@ -31,6 +40,10 @@
     { id: 'time', ic: '⏱️', nm: 'עוד זמן', ds: '+15 שניות במשחקון עם טיימר', price: 25, stack: true },
     { id: 'boots', ic: '👟', nm: 'נעלי טורבו', ds: 'מהירות הליכה +20% לתמיד', price: 80, once: true },
     { id: 'radar', ic: '📡', nm: 'מכ״ם מטבעות', ds: 'מציג מטבעות ודמויות על המיני־מפה', price: 60, once: true },
+    { id: 'medkit', ic: '💊', nm: 'ערכת עזרה ראשונה', ds: 'ריפוי מלא מיידי', price: 20, act() { OG.Combat.P.hp = OG.Combat.P.maxHp; } },
+    { id: 'armorpack', ic: '🦺', nm: 'שריון קל', ds: '+50 שריון מיידי', price: 30, act() { OG.Combat.P.armor = Math.min(100, OG.Combat.P.armor + 50); } },
+    { id: 'ammopack', ic: '📦', nm: 'ארגז תחמושת', ds: 'מילוי תחמושת לכל הנשקים שברשותכם', price: 40, act() { for (const w of OG.Combat.owned()) OG.state.data.weapons[w] += Math.round(OG.WEAPONS[w].pack[0] * .6); OG.Combat.hudWeapon(); } },
+    { id: 'cashbag', ic: '💱', nm: 'החלפה למזומן', ds: '🪙 10 ← 💵 60', price: 10, act() { OG.state.addCash(60); } },
     { id: 'sports', ic: '🏎️', nm: 'מנוע ספורט', ds: 'כל רכב שתנהגו בו יהיה מהיר ומחוזק', price: 150, once: true }
   ];
   const JACKETS = ['#22d3ee', '#f472b6', '#fbbf24', '#34d399', '#a78bfa', '#f87171', '#fb923c', '#e5e7eb'];
@@ -43,6 +56,8 @@
       new MutationObserver(ui.syncPause).observe(screens(), { childList: true });
       document.getElementById('btn-menu').onclick = () => ui.openMenu();
       document.getElementById('btn-map').onclick = () => ui.openMap();
+      document.getElementById('btn-mp').onclick = () => OG.MP.openLobby();
+      document.getElementById('btn-prof').onclick = () => OG.Svc.profile();
       document.getElementById('btn-sound').onclick = () => { const s = OG.state.data.settings; s.sound = !s.sound; OG.snd.setEnabled(s.sound); OG.state.save(); ui.refreshHud(); };
       OG.World.onInteract = (kind, ref) => {
         if (kind === 'door') {
@@ -50,6 +65,7 @@
           if (!OG.isUnlocked(ch.id)) { OG.toast(`🔒 פרק ${ch.num} נעול. סיימו קודם את הפרק הקודם (חידון + משחקון).`, 'warn'); OG.snd.play('bad'); return; }
           OG.snd.play('click'); ui.openHub(ch.id);
         } else if (kind === 'shop') ui.openShop();
+        else if (kind === 'svc') OG.Svc.open(ref.svc);
         else if (kind === 'npc') ui.talk(ref);
         else if (kind === 'gate') ui.talk(OG.World.npcs.find(n => n.id === 'guard'));
       };
@@ -57,7 +73,7 @@
     },
     refreshHud() {
       const d = OG.state.data, $ = OG.$;
-      $('#hud-score b').textContent = OG.fmt(OG.state.score()); $('#hud-coins b').textContent = OG.fmt(d.coins); $('#hud-rank b').textContent = OG.state.rank();
+      $('#hud-score b').textContent = OG.fmt(OG.state.score()); $('#hud-coins b').textContent = OG.fmt(d.coins); $('#hud-cash b').textContent = OG.fmt(d.cash); $('#hud-power b').textContent = OG.state.power(); $('#hud-rank b').textContent = OG.state.rank();
       $('#btn-sound').textContent = d.settings.sound ? '🔊' : '🔇';
       ui.updateObjective();
     },
@@ -171,6 +187,7 @@
         i++; if (i < lines.length) { showLine(); return; }
         // end of lines
         if (data.shop) { close(); ui.openShop(); return; }
+        if (data.open) { close(); OG.Svc.open(data.open); return; }
         if (data.q && !d.npcSeen[npc.id + '_q'] && OG.quizzes[data.q]) { ask(); return; }
         close();
       };
@@ -193,7 +210,7 @@
         const grid = el('div.shop-grid');
         for (const it of SHOP) {
           const have = d.items[it.id] || 0; const owned = it.once && have;
-          grid.append(el('div.item', el('div.ic', { text: it.ic }), el('div.nm', { text: it.nm + (it.stack ? ` (${have})` : '') }), el('div.ds', { text: it.ds }), el('button.btn.small' + (owned ? '' : '.warn'), { text: owned ? '✔ ברשותכם' : `🪙 ${it.price}`, disabled: !!owned, onclick() { if (d.coins < it.price) { OG.toast('אין מספיק מטבעות 🪙', 'warn'); OG.snd.play('bad'); return; } d.coins -= it.price; d.items[it.id] = (d.items[it.id] || 0) + 1; OG.snd.play('coin'); OG.state.save(); ui.refreshHud(); render(); } })));
+          grid.append(el('div.item', el('div.ic', { text: it.ic }), el('div.nm', { text: it.nm + (it.stack ? ` (${have})` : '') }), el('div.ds', { text: it.ds }), el('button.btn.small' + (owned ? '' : '.warn'), { text: owned ? '✔ ברשותכם' : `🪙 ${it.price}`, disabled: !!owned, onclick() { if (d.coins < it.price) { OG.toast('אין מספיק מטבעות 🪙', 'warn'); OG.snd.play('bad'); return; } d.coins -= it.price; if (it.act) it.act(); else d.items[it.id] = (d.items[it.id] || 0) + 1; OG.snd.play('coin'); OG.state.save(); ui.refreshHud(); render(); } })));
         }
         p.append(grid);
         const sw = (title, arr, key, car) => { const r = el('div.row', { style: { marginTop: '8px' } }, el('b', { text: title })); arr.forEach(col => { const owned = d.ownedLooks.includes(col); const b = el('button', { style: { width: '34px', height: '34px', borderRadius: '50%', border: d.look[key] === col ? '3px solid #fff' : '2px solid #2b3a6e', background: col, position: 'relative' }, title: owned ? 'בחרו' : '12 🪙', onclick() { if (!owned) { if (d.coins < 12) { OG.toast('אין מספיק מטבעות', 'warn'); return; } d.coins -= 12; d.ownedLooks.push(col); } d.look[key] = col; if (key === 'paint') OG.World.playerCar.color = col; OG.state.save(); ui.refreshHud(); render(); } }); if (!owned) b.textContent = '🔒'; r.append(b); }); return r; };
@@ -209,12 +226,13 @@
         root.innerHTML = ''; const p = el('div.panel', { style: { width: 'min(640px,96vw)' } });
         p.append(el('div.row', el('h2', { text: '☰ תפריט' }), el('div.grow'), el('span.tag', { html: `⭐ ${OG.state.score()} · ${OG.state.rank()}` }), el('button.btn.small', { text: 'חזרה למשחק', onclick() { root.remove(); } })));
         const list = el('div.menu-list');
-        list.append(toggle('🔊 צלילים', d.settings.sound, v => { d.settings.sound = v; OG.snd.setEnabled(v); }), toggle('🎵 מוזיקת רקע', d.settings.music, v => { d.settings.music = v; OG.snd.setMusic(v); }), toggle('🔓 מצב חופשי (פתיחת כל הפרקים)', d.settings.free, v => { d.settings.free = v; ui.refreshHud(); render(); }));
+        list.append(toggle('🔊 צלילים', d.settings.sound, v => { d.settings.sound = v; OG.snd.setEnabled(v); }), toggle('🎵 מוזיקת רקע', d.settings.music, v => { d.settings.music = v; OG.snd.setMusic(v); }), toggle('🌧️ גשם', d.settings.rain, v => { d.settings.rain = v; }), toggle('🔓 מצב חופשי (פתיחת כל הפרקים)', d.settings.free, v => { d.settings.free = v; ui.refreshHud(); render(); }));
+        p.append(el('div.row', { style: { margin: '8px 0', flexWrap: 'wrap' } }, el('button.btn.small.primary', { text: '👤 פרופיל וכוחות (P)', onclick() { root.remove(); OG.Svc.profile(); } }), el('button.btn.small.primary', { text: '🌐 רב־משתתפים (G)', onclick() { root.remove(); OG.MP.openLobby(); } }), el('button.btn.small', { text: '📻 רדיו (N)', onclick() { OG.Combat.radio(); } })));
         p.append(list, el('h3', { text: 'פרקים', style: { marginTop: '12px' } }));
         const chs = el('div.menu-list');
         for (const ch of OG.CH) {
           const un = OG.isUnlocked(ch.id), done = OG.state.isComplete(ch.id);
-          chs.append(el('div.ch-row' + (un ? '' : '.locked'), { style: { '--cc': ch.color } }, el('div.n', { text: ch.boss ? '★' : ch.num }), el('div.grow', el('b', { text: ch.icon + ' ' + ch.title }), el('div.muted', { style: { fontSize: '12px' }, text: ch.pack === 'extra' ? 'EXTRA' : '' })), el('span.stars', { text: '★'.repeat(OG.state.stars(ch.id)) }), done ? '✅' : un ? '' : '🔒', un ? el('button.btn.small', { text: 'קפיצה', onclick() { const dr = OG.World.doors.find(x => x.ch === ch.id); root.remove(); OG.World.teleport(dr.x, dr.y + 70); } }) : ''));
+          chs.append(el('div.ch-row' + (un ? '' : '.locked'), { style: { '--cc': ch.color } }, el('div.n', { text: ch.boss ? '★' : ch.num }), el('div.grow', el('b', { text: ch.icon + ' ' + ch.title }), el('div.muted', { style: { fontSize: '12px' }, text: ch.pack === 'extra' ? 'EXTRA' : '' })), el('span.stars', { text: '★'.repeat(OG.state.stars(ch.id)) }), done ? '✅' : un ? '' : '🔒', un ? el('button.btn.small', { text: 'קפיצה', onclick() { const dr = OG.World.doors.find(x => x.ch === ch.id); if (ui.travel(dr.x, dr.y + 70)) root.remove(); } }) : ''));
         }
         p.append(chs, el('div.row', { style: { marginTop: '12px' } }, el('button.btn.danger.small', { text: 'איפוס התקדמות', onclick() { if (confirm('למחוק את כל ההתקדמות?')) { OG.state.reset(); location.reload(); } } })));
         root.append(p);
@@ -222,12 +240,17 @@
       const toggle = (label, val, fn) => { const sw = el('button.sw' + (val ? '.on' : '')); sw.onclick = () => { val = !val; sw.classList.toggle('on', val); fn(val); OG.state.save(); }; return el('div.toggle', el('span', { text: label }), sw); };
       render();
     },
+    travel(x, y) {
+      const d = OG.state.data, C = OG.Combat; if (C.stars) { OG.toast('🚨 אי אפשר לנסוע במונית כשמחפשים אתכם!', 'warn'); return false; }
+      const cost = d.settings.free ? 0 : 25; if (d.cash < cost) { OG.toast('מונית עולה 💵 25 – אין מספיק מזומן. אפשר לנסוע ברגל/ברכב!', 'warn'); OG.snd.play('bad'); return false; }
+      if (OG.World.P.dead) return false; if (cost) OG.state.addCash(-cost); OG.World.teleport(x, y); OG.toast(cost ? '🚕 מונית! -💵 25' : '✨ קפיצה', 'good'); return true;
+    },
     openMap() {
       const root = el('div.screen'); screens().append(root); const p = el('div.panel', { style: { textAlign: 'center' } });
       const cv = el('canvas', { width: 1100, height: 700 }); const wrap = el('div.bigmap', cv);
-      p.append(el('div.row', el('h2', { text: '🗺️ מפת העיר' }), el('div.grow'), el('span.muted', { text: 'לחצו על בניין פתוח כדי להשתגר אליו' }), el('button.btn.small', { text: 'סגור', onclick() { root.remove(); } })), wrap); root.append(p);
+      p.append(el('div.row', el('h2', { text: '🗺️ מפת העיר' }), el('div.grow'), el('span.muted', { text: 'לחצו על בניין כדי לנסוע אליו במונית · 💵 25' }), el('button.btn.small', { text: 'סגור', onclick() { root.remove(); } })), wrap); root.append(p);
       const spots = OG.World.bigMap(cv);
-      cv.onclick = e => { const r = cv.getBoundingClientRect(), x = (e.clientX - r.left) * cv.width / r.width, y = (e.clientY - r.top) * cv.height / r.height; const s = spots.find(s => OG.dist(s.x, s.y, x, y) < s.r + 6); if (s) { if (!s.un) { OG.toast('🔒 הפרק הזה עדיין נעול', 'warn'); return; } root.remove(); OG.World.teleport(s.d.x, s.d.y + 70); OG.snd.play('whoosh'); } };
+      cv.onclick = e => { const r = cv.getBoundingClientRect(), x = (e.clientX - r.left) * cv.width / r.width, y = (e.clientY - r.top) * cv.height / r.height; const s = spots.find(s => OG.dist(s.x, s.y, x, y) < s.r + 6); if (s) { if (!s.un) { OG.toast('🔒 הפרק הזה עדיין נעול', 'warn'); return; } if (ui.travel(s.d.x, s.d.y + 70)) { root.remove(); OG.snd.play('whoosh'); } } };
     }
   };
 

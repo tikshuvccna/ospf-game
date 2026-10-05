@@ -1,9 +1,11 @@
 /* OSPF City – persistent state */
 (function (OG) {
-  const KEY = 'ospf-city-v1';
+  const KEY = 'ospf-city-v2', OLD = 'ospf-city-v1';
   const def = () => ({
     v: 1, name: '', started: false,
-    coins: 0, bonusScore: 0,
+    coins: 0, cash: 150, bonusScore: 0, bank: 0,
+    weapons: { pistol: 60 }, wsel: 'pistol', ownedVeh: [], missions: { done: 0, byType: {} }, stats: { kills: 0, deaths: 0, ko: 0, cashEarned: 0, wanted: 0, mpKills: 0 },
+    shards: {}, ach: {}, casino: { won: 0, lost: 0, plays: 0 }, perk: {},
     items: { hint: 2, shield: 0, time: 0, boots: 0, radar: 0, sports: 0 },
     look: { jacket: '#22d3ee', paint: '#ef4444' },
     ownedLooks: ['#22d3ee', '#ef4444'],
@@ -11,13 +13,20 @@
     collected: {},          // coin ids picked up
     npcSeen: {},
     pos: null,
-    settings: { sound: true, music: true, free: false },
+    settings: { sound: true, music: true, free: false, rain: false, radio: 0 },
     playtime: 0
   });
   const S = OG.state = {
     data: def(),
     load() {
-      try { const j = localStorage.getItem(KEY); if (j) { const d = JSON.parse(j); S.data = Object.assign(def(), d); S.data.items = Object.assign(def().items, d.items); S.data.settings = Object.assign(def().settings, d.settings); } } catch (e) { }
+      try {
+        let j = localStorage.getItem(KEY), migrated = false; if (!j) { j = localStorage.getItem(OLD); migrated = !!j; }
+        if (j) {
+          const d = JSON.parse(j), D = def(); S.data = Object.assign(D, d);
+          for (const k of ['items', 'settings', 'stats', 'missions', 'casino', 'look']) S.data[k] = Object.assign(D[k], d[k]);
+          if (migrated) { S.data.collected = {}; S.data.pos = null; }
+        }
+      } catch (e) { }
       return S.data;
     },
     save() { try { localStorage.setItem(KEY, JSON.stringify(S.data)); } catch (e) { } },
@@ -30,6 +39,9 @@
       for (const l in c.games) s += c.games[l].pts || 0;
       return s;
     },
+    power() { let n = 0; for (const id in S.data.ch) if (S.isComplete(id)) n++; return n + Math.floor((S.data.missions.done || 0) / 3); },
+    chaptersDone() { let n = 0; for (const id in S.data.ch) if (S.isComplete(id)) n++; return n; },
+    addCash(n, why) { S.data.cash = Math.max(0, S.data.cash + Math.round(n)); if (n > 0) S.data.stats.cashEarned += n; OG.ui && OG.ui.refreshHud(); S.save(); },
     score() { let s = S.data.bonusScore || 0; for (const id in S.data.ch) s += S.chapterScore(id); return Math.round(s); },
     addCoins(n) { S.data.coins = Math.max(0, S.data.coins + n); OG.ui && OG.ui.refreshHud(); S.save(); },
     isComplete(id) {

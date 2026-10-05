@@ -1,7 +1,8 @@
 /* OSPF City – tiny WebAudio synth: sfx + procedural synthwave music */
 (function (OG) {
   let ctx = null, master = null, musicGain = null, sfxGain = null, musicOn = false, musicTimer = null, step = 0;
-  const S = OG.snd = {
+  const PM = [1, 1.19, .89, .75], TM = [200, 150, 245, 300];
+  const S = OG.snd = { station: 0,
     enabled: true, music: true,
     init() {
       if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return; }
@@ -45,6 +46,15 @@
         case 'lose': [392, 349, 311, 262].forEach((f, i) => S.tone(f, .25, 'sawtooth', .25, i * .16)); break;
         case 'stamp': S.noise(.1, .4, 0, 100); S.tone(110, .15, 'square', .3); break;
         case 'tick': S.tone(1200, .03, 'square', .1); break;
+        case 'shot': S.noise(.09, .35, 0, 1200); S.tone(180, .08, 'square', .22, 0, -120); break;
+        case 'shotgun': S.noise(.22, .5, 0, 300); S.tone(110, .18, 'sawtooth', .3, 0, -70); break;
+        case 'rocket': S.noise(.3, .4, 0, 200); S.tone(90, .35, 'sawtooth', .3, 0, 200); break;
+        case 'laser': S.tone(1400, .18, 'sawtooth', .22, 0, -1100); S.tone(900, .14, 'square', .12, 0, -600); break;
+        case 'hit': S.tone(150, .09, 'square', .25, 0, -60); S.noise(.06, .2, 0, 600); break;
+        case 'boom': S.noise(.7, .7, 0, 60); S.tone(60, .5, 'sawtooth', .5, 0, -30); break;
+        case 'siren': S.tone(700, .22, 'sine', .25); S.tone(900, .22, 'sine', .25, .22); S.tone(700, .22, 'sine', .25, .44); break;
+        case 'slot': S.tone(300 + Math.random() * 500, .05, 'square', .12); break;
+        case 'jackpot': for (let i = 0; i < 10; i++) S.tone(523 * (1 + (i % 4) * .25), .12, 'square', .25, i * .07); break;
         case 'level': [392, 523, 659, 784, 1047].forEach((f, i) => S.tone(f, .15, 'square', .25, i * .08)); break;
       }
     },
@@ -56,12 +66,12 @@
       const tick = () => {
         if (!musicOn) return;
         const i = step % 16, bar = Math.floor(step / 16) % 4;
-        S.tone(bass[(i + bar * 4) % 16] * (i % 4 === 0 ? 1 : 1), .22, 'sawtooth', .5, 0, 0, musicGain);
-        const a = arp[bar]; S.tone(a[i % 3] * 2, .12, 'square', .13, 0, 0, musicGain);
+        S.tone(bass[(i + bar * 4) % 16] * PM[S.station || 0], .22, 'sawtooth', .5, 0, 0, musicGain);
+        const a = arp[bar]; S.tone(a[i % 3] * 2 * PM[S.station || 0], .12, 'square', .13, 0, 0, musicGain);
         if (i % 8 === 4) S.noise(.06, .08, 0, 4000);
         if (i % 4 === 2 && bar % 2 === 1) S.tone(a[(i >> 2) % 3] * 4, .3, 'triangle', .1, 0, 0, musicGain);
         step++;
-        musicTimer = setTimeout(tick, 200);
+        musicTimer = setTimeout(tick, TM[S.station || 0]);
       };
       tick();
     },

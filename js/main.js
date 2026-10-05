@@ -5,7 +5,7 @@
     const s = OG.state.data.settings; OG.snd.enabled = s.sound; OG.snd.music = s.music;
     OG.World.init(document.getElementById('world'));
     OG.World.playerCar.color = OG.state.data.look.paint;
-    OG.ui.init();
+    OG.ui.init(); OG.Combat.hudWeapon();
     const d = OG.state.data;
     if (d.pos) OG.World.teleport(d.pos.x, d.pos.y);
     OG.ui.showTitle(() => { OG.ui.refreshHud(); OG.ui.updateObjective(); });
