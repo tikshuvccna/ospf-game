@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>סיכום משובים (מנהל)</title>
+<style>body{font-family:Heebo,Segoe UI,Arial,sans-serif;background:#0b1020;color:#e8ecff;margin:0;padding:20px;max-width:900px;margin:auto}textarea{width:100%;height:200px;background:#0a1024;color:#e8ecff;border:1px solid #2b3a6e;border-radius:12px;padding:10px;font-family:monospace;direction:ltr}button{background:linear-gradient(135deg,#0ea5c6,#7c5cff);border:0;color:#fff;font-weight:700;border-radius:12px;padding:10px 20px;font-size:16px;cursor:pointer;margin:8px 4px 8px 0}h1{margin:0 0 6px}.m{color:#9aa7d6}pre{white-space:pre-wrap;background:#121a35;border:1px solid #2b3a6e;border-radius:12px;padding:14px;direction:rtl;line-height:1.6}</style></head>
+<body>
+<h1>📊 סיכום משובי בטא</h1>
+<p class="m">1) Firebase Console ← Realtime Database ← ליד <b>feedback</b> לחצו ⋮ ← <b>Export JSON</b>. 2) הדביקו כאן (או העלו את הקובץ). 3) העתיקו את הסיכום ושלחו ל-Claude.</p>
+<input type="file" id="f" accept=".json"><br><textarea id="in" placeholder="הדביקו כאן JSON"></textarea><br>
+<button id="go">צרו סיכום</button><button id="cp">📋 העתיקו</button>
+<pre id="out"></pre>
+<script src="config.js"></script>
+<script>
+const F = FORM; const $ = s => document.querySelector(s);
+const qs = {}; F.steps.forEach(s => (s.q || []).forEach(q => qs[q.id] = Object.assign({ step: s.title }, q)));
+function collect(o, out) { if (!o || typeof o !== 'object') return out; if (o.answers && o.ts) { out.push(o); return out; } Object.values(o).forEach(v => collect(v, out)); return out; }
+const count = arr => { const m = {}; arr.forEach(v => m[v] = (m[v] || 0) + 1); return Object.entries(m).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ×${v}`).join(' | '); };
+const avg = a => a.length ? (a.reduce((s, x) => s + x, 0) / a.length).toFixed(2) : '–';
+function digest(R) {
+  const L = []; L.push(`# סיכום משוב: ${F.game} · ${R.length} תשובות · גרסאות: ${count(R.map(r => r.version))}`);
+  L.push(`תאריכים: ${R.map(r => r.ts.slice(0, 10)).sort()[0]} … ${R.map(r => r.ts.slice(0, 10)).sort().pop()}`);
+  const devs = R.map(r => (r.meta && r.meta.touch ? 'מגע' : 'עכבר') + ' ' + (r.meta && r.meta.screen)); L.push('מכשירים: ' + count(devs));
+  F.steps.forEach(s => { if (!s.q) return; L.push(`\n## ${s.title}`); s.q.forEach(q => {
+    const vals = R.map(r => r.answers[q.id]).filter(v => v !== undefined && v !== null && v !== -1);
+    if (!vals.length) return;
+    if (q.type === 'stars' || q.type === 'scale') L.push(`- ${q.q}: ממוצע ${avg(vals)} (n=${vals.length}) התפלגות: ${count(vals)}`);
+    else if (q.type === 'nps') { const p = vals.filter(v => v >= 9).length, d = vals.filter(v => v <= 6).length; L.push(`- ${q.q}: ממוצע ${avg(vals)} · NPS ${Math.round((p - d) / vals.length * 100)} (n=${vals.length})`); }
+    else if (q.type === 'chips') L.push(`- ${q.q}: ${count(vals)}`);
+    else if (q.type === 'multi') L.push(`- ${q.q}: ${count(vals.flat())}`);
+    else if (q.type === 'matrix') q.rows.forEach(r => L.push(`- ${r}: ${count(vals.map(v => v[r]).filter(Boolean))}`));
+    else if (q.type === 'bugs') { vals.flat().forEach(b => L.push(`  🐞 [${b.sev || '?'}] ${b.where || '?'}: ${b.desc || ''}`)); }
+    else { L.push(`- ${q.q}:`); vals.forEach(v => L.push(`   • ${String(v).replace(/\n/g, ' / ')}`)); }
+  }); });
+  L.push('\n## משובים לפי שלב (שיחקו / כיף / למידה / קושי / דקות משחקון / דקות פרק)');
+  F.stages.forEach(st => {
+    const S = R.map(r => r.answers.stages && r.answers.stages[st.id]).filter(Boolean); if (!S.length) { L.push(`- שלב ${st.n} ${st.title} (${st.game}): אין משוב`); return; }
+    const g = k => S.map(s => s[k]).filter(v => v !== undefined);
+    L.push(`- שלב ${st.n} ${st.title} (${st.game}) n=${S.length}: שיחקו[${count(g('played'))}] כיף ${avg(g('fun'))} למידה ${avg(g('learn'))} קושי[${count(g('diff'))}] בהירות[${count(g('clear'))}] דקות-משחקון[${count(g('minutes'))}] דקות-פרק[${count(g('total'))}]`);
+    S.filter(s => s.note).forEach(s => L.push(`    • ${s.note.replace(/\n/g, ' / ')}`));
+  });
+  return L.join('\n');
+}
+function run() { let j; try { j = JSON.parse($('#in').value); } catch (e) { $('#out').textContent = 'JSON לא תקין: ' + e.message; return; } const R = collect(j, []); $('#out').textContent = R.length ? digest(R) : 'לא נמצאו תשובות בקובץ'; }
+$('#go').onclick = run; $('#cp').onclick = () => navigator.clipboard.writeText($('#out').textContent);
+$('#f').onchange = e => { const r = new FileReader(); r.onload = () => { $('#in').value = r.result; run(); }; r.readAsText(e.target.files[0]); };
+</script></body></html>
